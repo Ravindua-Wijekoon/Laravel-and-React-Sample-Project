@@ -8,13 +8,15 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->decimal('price', 8, 2);
-            $table->text('descrription')->nullable();
+            $table->text('description')->nullable();
+            $table->string('photo')->nullable();
+            $table->integer('quantity');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
