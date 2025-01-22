@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Product;
+
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -12,13 +12,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('category')->get();
-        $products->each(function ($product) {
-            if ($product->photo) {
-                $product->photo = asset('storage/' . $product->photo);
-            }
-        });
-        return response()->json($products);
+        return Product::with('category')->get();
     }
 
     /**
@@ -26,32 +20,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'description' => 'nullable',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'quantity' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|string',
+            'quantity' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
         ]);
-
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('products', 'public');
-        }
-
-        $product = Product::create([
-            'name' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
-            'photo' => $photoPath,
-            'quantity' => $request->quantity,
-            'category_id' => $request->category_id,
-        ]);
-
-        return response()->json($product, 201);
+        return Product::create($validated);
     }
-
 
     /**
      * Display the specified resource.
@@ -66,26 +44,18 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'name' => 'required',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'description' => 'nullable',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'quantity' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|string',
+            'quantity' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
         ]);
-
-        if ($request->hasFile('photo')) {
-            if ($product->photo) {
-                \Storage::delete('public/' . $product->photo);
-            }
-            $product->photo = $request->file('photo')->store('products', 'public');
-        }
-
-        $product->update($request->all());
-
-        return response()->json($product);
+        $product->update($validated);
+        return $product;
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -93,6 +63,6 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return response()->json(['message' => 'Product deleted successfully']);
+        return response(null, 204);
     }
 }
