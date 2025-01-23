@@ -8,7 +8,8 @@ const NavBar = () => {
       sx={{
         boxShadow: 'none', 
         backgroundColor: '#363847', 
-        borderBottom:'3px solidrgb(26, 98, 180)',
+        borderBottom:'3px solid #1565c0',
+
       }}>
         <Toolbar>
           <Typography variant="h5" fontWeight={'bold'} color='white' sx={{ flexGrow: 1 }}>
