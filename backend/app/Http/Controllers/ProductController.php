@@ -5,7 +5,7 @@ use App\Models\Product;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Log;
 class ProductController extends Controller
 {
     /**
@@ -74,6 +74,9 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $request->merge($request->all());
+        \Log::info('Request Data:', $request->all());
+
         // Validate input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
